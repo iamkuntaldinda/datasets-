@@ -1,2 +1,0 @@
-BullseyeCoverage 8.8.6 error 15: Cannot find C:\Users\Vineet\AppData\LocalLow\Unity\WebPlayer\loader/test.cov. COVFILE is not set, errno=2. Executable is C:\Users\Vineet\AppData\LocalLow\Unity\WebPlayer\loader\npUnity3D32.dll
-dsd
