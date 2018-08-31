@@ -1,0 +1,39 @@
+
+
+pig -x local
+
+
+tweets_dt = LOAD 'tweet_info.csv' USING PigStorage('\t') AS(id:long, tweet:chararray, username:chararray);
+DUMP tweets_dt;
+users_dt =  LOAD users_info.csv' USING PigStorage('\t') AS(login_info:long, username:chararray, state:chararray);
+DUMP users_dt;
+###login information
+
+x = FILTER users_dt BY (state == 'FM');
+
+d = foreach x generate $0;
+
+DUMP d; 
+
+##word in tweets
+b = FILTER tweets_dt BY (tweet matches '.*favourite.*');
+WORD = order b by $0;
+DUMP WORD;
+
+##join
+joined = join tweets_dt by username, users_dt by username;
+STORE joined INTO 'outputB' USING PigStorage ('\t');
+
+##count_of_tweets
+B = GROUP tweets_dt BY username;
+DESCRIBE B;
+
+B: {group: int, A: {id:long, tweet:chararray, username:chararray}}
+
+ILLUSTRATE B;
+DUMP B;
+data = FOREACH B GENERATE group, COUNT(A);
+DUMP data;
+STORE dat INTO 'outputC';
+
+###
