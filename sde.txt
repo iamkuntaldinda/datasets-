@@ -1,0 +1,41 @@
+Q1:
+
+pig -x local
+tweets_dt = LOAD 'tweet_info.csv' USING PigStorage('\t') AS(id:long, tweet:chararray, username:chararray);
+DUMP tweets_dt;
+
+users_dt =  LOAD ‘user_info.csv' USING PigStorage('\t') AS(login_info:long, username:chararray, state:chararray);
+DUMP users_dt;
+
+Q2:
+x = FILTER users_dt BY (state == 'FM');
+d = foreach x generate $0;
+DUMP d;
+
+Q3:
+b = FILTER tweets_dt BY (tweet matches '.*fine.*');
+WORD = order b by $0;
+DUMP WORD;
+
+Q4:
+joined = join tweets_dt by username, users_dt by username;
+STORE joined INTO 'outputB';
+
+
+Q5:
+
+B = GROUP tweets_dt BY username;
+DESCRIBE B;
+ILLUSTRATE B;
+DUMP B;
+data = FOREACH B GENERATE group, (int)COUNT(tweets_dt.tweet) AS total;
+DUMP data;
+STORE data INTO 'outputC';
+
+Q6:
+X = FILTER data BY (int)total >= 5; 
+
+Q7:
+
+
+
