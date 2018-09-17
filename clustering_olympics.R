@@ -36,13 +36,26 @@ y_total <- X
 ##find count of missing values
 sapply(y_total, function(x) sum(is.na(x)))
 
-
 ##data preparation
 library("cluster")
 library("factoextra")
 library("magrittr")
 library("dplyr")
 y_total_numeric <- select_if(y_total, is.numeric)
+
+# Replace values with mean: Height
+X$Height[is.na(X$Height)] <-mean(X$Height,na.rm=T)
+table(is.na(X$Height ))
+
+X$Age[is.na(X$Age)] <-mean(X$Age,na.rm=T)
+table(is.na(X$Age ))
+
+X$Weight[is.na(X$Weight)] <-mean(X$Weight,na.rm=T) 
+table(is.na(X$Weight ))
+
+
+y_total <- X
+
 
 # Replace values with mean: Height
 y_total_numeric$Height[is.na(y_total_numeric$Height)] <-mean(y_total_numeric$Height,na.rm=T)
@@ -87,13 +100,13 @@ quantile(newdata$Weight,prob=c(0,0.01,0.05,0.25,0.5,0.75,0.95,0.99,1.0))
 ## Determine number of clusters
 Cluster_Variability <- matrix(nrow=8, ncol=1)
 for (i in 1:8) Cluster_Variability[i] <- kmeans(my_data,centers=i, nstart=4)$tot.withinss
-plot(1:8, Cluster_Variability, type="b", xlab="Number of clusters", ylab="Within groups sum of squares") ## Elbow curve or Scree plot
+plot(1:8, Cluster_Variability, type="b", xlab="Number of clusters", ylab="Within groups sum of squares",col = "blue") ## Elbow curve or Scree plot
 
 ##clustering
 set.seed(100)
-km <- kmeans(my_data, 4, nstart = 25)
+km <- kmeans(my_data, 3, nstart = 25)
 summary(km)
-dd <- cbind(y_1992, cluster = km$cluster)
+dd <- cbind(y_total, cluster = km$cluster)
 head(dd)
 
 write.csv(dd,file = 'clusters.csv')
@@ -104,7 +117,29 @@ fviz_cluster(km, data = my_data,
              palette = "jco",
              ggtheme = theme_minimal())
 
-##clustering by season
+###
+pcaObj <- princomp(my_data, cor = TRUE, scores = TRUE, covmat = NULL)
+
+summary(pcaObj)
+plot(pcaObj)
+#View(pcaObj)
+loadings(pcaObj)
+c <- pcaObj$loadings  ## same as above
+c <- as.matrix(c)
+c
+
+plot(pcaObj, type = "l")
+biplot(pcaObj)
+biplot(pcaObj$scores[,1:2],pcaObj$loading[,1:2]) ## if you didn't want rescaling of the axis
+
+pc_scores <- pcaObj$scores
+pc_scores
+pc_scores1 <- as.data.frame(pc_scores)
+head(pc_scores1)
+pc_scores12 <- pc_scores1[,c(1,2)]
+
+
+##clustering by summer season
 colnames(X)
 summer <- X[X$Season == 'Summer',]
 dim(summer)
@@ -121,7 +156,6 @@ table(is.na(summer_numeric$Weight ))
 
 summer_numeric$Age[is.na(summer_numeric$Age)] <-mean(summer_numeric$Age,na.rm=T) 
 table(is.na(summer_numeric$Age ))
-
 
 ###
 myvars <- c("Age", "Height", "Weight")
@@ -191,9 +225,8 @@ sapply(winter, function(x) sum(is.na(x)))
 ##VISUALISATION
 g <- ggplot(summer, aes(summer$Year))
 g + geom_bar(aes(fill=Medal), width = 2) + 
-  theme(axis.text.x = element_text(angle=65, vjust=0.6)) + 
-  labs(title="Histogram on Categorical Variable", 
-       subtitle="Manufacturer across Vehicle Classes") 
+  theme(axis.text.x = element_text(angle=35, vjust=0.4)) + 
+  labs(title="Medals type across years") 
 
 
 ###line plot
@@ -202,18 +235,11 @@ x_gold <- as.data.frame(x_gold)
 
 
 g <- ggplot(x_gold, aes(x_gold$Year))
-g + geom_line(aes(Year,no_of_medals),col = "blue") + lines()+ 
-  labs(title="Histogram on Categorical Variable", 
-       subtitle="Manufacturer across Vehicle Classes") 
-
-gold.ts <- ts(x_gold$no_of_medals, start = c(1896), end = c(2016), freq = 1/2)
-plot(gold.ts, type = 'o',col= 'blue')
-plot(gold.ts, ylab="Shampoo Sales",ylim=c(min(gold.ts),max(gold.ts)),bty="l", type="b")
-gold <- tslm(gold.ts~trend)
-lines(gold$fitted, lwd=2)
+g + geom_line(aes(Year,no_of_medals),col = "blue") + 
+  labs(title="Number of Gold medals") 
 # plot
-treeMapCoordinates <- treemapify(proglangs,
-                                 area = "value",
+treeMapCoordinates <- treemapify(X,
+                                 area = "X$",
                                  fill = "parent",
                                  label = "id",
                                  group = "parent")
@@ -248,9 +274,7 @@ x
 
 g <- ggplot(x, aes(Sport,no_of_medals))
 g + geom_bar(stat = "identity",aes(fill = Medal)) +
-  coord_flip() 
-box + scale_fill_manual(values=c( "#E69F00", "#56B4E9"))
-
+  coord_flip()
 ###by gender
 X$Sex
 x <- sqldf("SELECT Sex,COUNT(Medal) as no_of_medals,Medal FROM X GROUP BY Sex, Medal ORDER BY no_of_medals DESC LIMIT 50")
@@ -263,7 +287,8 @@ g + geom_bar(stat = "identity",aes(fill = Medal)) +
 
 ###top 20  athletes
 x <- sqldf("SELECT Name,COUNT(Medal) as no_of_medals,Sex,team  FROM X GROUP BY Name, Medal ORDER BY no_of_medals DESC LIMIT 20")
-x
+x <- as.data.frame(x)
+View(x)
 
 ###top 10 male athletes
 y <- sqldf("SELECT Name,COUNT(Medal) as no_of_medals,Sex,team  FROM X WHERE Sex = 'M' GROUP BY Name, Medal ORDER BY no_of_medals DESC LIMIT 10")
@@ -273,14 +298,47 @@ y
 x <- sqldf("SELECT Name,COUNT(Medal) as no_of_medals,Sex,team  FROM X WHERE Sex = 'F' GROUP BY Name, Medal ORDER BY no_of_medals DESC LIMIT 10")
 x
 
-####by mean of age
+####by mean of age by year
+require(sqldf)
+x <- sqldf("SELECT Year,AVG(Age) as mean_age FROM X GROUP BY Year ")
+x
 
+####by mean of age by team
+x <- sqldf("SELECT Team,AVG(Age) as mean_age FROM X WHERE Season = 'Summer' GROUP BY Team  ")
+x
 
 ####by mean of height
-
-####Best male and female athletes
 
 
 
 ###clustering by gdp and population of countries
+library(readxl)
+df1<- read_excel("dataset_made.xlsx")
+
+dim(df1)
+str(df1)
+
+myvars <- c("gdp_nominal - US$MM", "population", "total_No_of_medals")
+newdata <- df1[myvars]
+
+##find count of missing values
+sapply(df1, function(x) sum(is.na(x)))
+df1$`gdp_per capita (usd)`[is.na(df1$`gdp_per capita (usd)`)] <-median(df1$`gdp_per capita (usd)`,na.rm=T)
+df1$`gdp_nominal - US$MM`[is.na(df1$`gdp_nominal - US$MM`)] <-median(df1$`gdp_nominal - US$MM`,na.rm=T)
+
+x <- newdata %>% scale()
+
+## Determine number of clusters
+Cluster_Variability <- matrix(nrow=8, ncol=1)
+for (i in 1:8) Cluster_Variability[i] <- kmeans(x,centers=i, nstart=4)$tot.withinss
+plot(1:8, Cluster_Variability, type="b", xlab="Number of clusters", ylab="Within groups sum of squares") ## Elbow curve or Scree plot
+
+set.seed(100)
+gdp <- kmeans(x, 4, nstart = 25)
+summary(gdp)
+gdp$withinss
+dd2<- cbind(df1, cluster = gdp$cluster)
+head(dd2)
+
+write.csv(dd2,"cluster_gdp.csv")
 
