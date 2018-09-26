@@ -139,7 +139,7 @@ m3 <- lm(TOTAL ~ AGE+ INCOME+Gender_F + CASTE_SC+ OCCU_H + OCCU_B + CASTE_OT + M
 summary(m3)
 
 
-####randomly
+####randomly modelling
 
 m3 <- lm(TOTAL ~ AGE:Gender_F:CASTE_SC + CASTE_SC  + MTONGUE_K:OCCU_H +RELIGN_H:OCCU_B:AGE+MTONGUE_U+ CASTE_OT+ Gender_F+ CASTE_OT:Gender_F+ OCCU_U:MTONGUE_U  + OCCU_C:MTONGUE_U:CASTE_SC  ,data = df)
 summary(m3)
@@ -178,18 +178,9 @@ qqline(rstandard(m3))
 
 #residualPlot(m3)
 
+##vif test
 vif(m3)
 car::vif(m3)
-
-CASTE_SC                 MTONGUE_U                  CASTE_OT 
-25.158164                  1.299820                 26.870754 
-Gender_F          MTONGUE_K:OCCU_H         Gender_F:CASTE_OT 
-12.590681                  1.001220                 17.586971 
-MTONGUE_U:OCCU_U     AGE:Gender_F:CASTE_SC       AGE:RELIGN_H:OCCU_B 
-1.014731                 10.272444                  1.000866 
-CASTE_SC:MTONGUE_U:OCCU_C 
-1.346698 
-
 
 best.subset <- regsubsets(TOTAL ~ AGE:Gender_F:CASTE_SC + CASTE_SC  + MTONGUE_K:OCCU_H +RELIGN_H:OCCU_B:AGE+MTONGUE_U+ CASTE_OT+ Gender_F+ CASTE_OT:Gender_F+ OCCU_U:MTONGUE_U  + OCCU_C:MTONGUE_U:CASTE_SC  ,data = df,nvmax=6)
 best.subset.summary <- summary(best.subset)
@@ -242,13 +233,6 @@ text(x=1:length(cooksd)+1, y=cooksd, labels=ifelse(cooksd>4*mean(cooksd, na.rm=T
 influential <- names(cooksd)[(cooksd > 4*mean(cooksd, na.rm=T))]
 influential
 
-influential
-[1] "5"   "20"  "33"  "36"  "51"  "101" NA    "138" "151" "192" "223" "225" "239"
-[14] "285" "291" "292" "308" "345" "347" "348" "365" "377" "379" "394" "395" "408"
-[27] "472" "483" "498" "588" "629" "702" "717" "745" "749" "791" "868" "891" "893"
-[40] "900" "924" "964" "969"
-
-
 #DFBETAs
 dfbetas=dfbetas(m3)
 dfbetas
@@ -289,7 +273,4 @@ fit_Step <- lm(TOTAL~AGE+INCOME+Gender_F+Gender_T+OCCU_C+OCCU_A+OCCU_H+OCCU_B+OC
 step <- stepAIC(fit_Step, direction="both")
 
 step$anova # display results
-
-
-#####logistic regression
 
