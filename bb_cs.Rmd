@@ -9,17 +9,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## R Markdown
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
-```
-
-## Including Plots
-
-You can also embed plots, for example:
 
 ```{r}
 install.packages('plyr')
@@ -332,21 +322,64 @@ dim(M78720)
 
 
 ```{r}
+input <- rbind(input,M78720)
+dim(input)
+members_matrix <- as.matrix(acast(input, Member~Description, fun.aggregate = mean))
+head(members_matrix)
 
+```
+
+```{r}
+R <- as(members_matrix, "realRatingMatrix")
+rec1 = Recommender(R, method="UBCF") ## User-based collaborative filtering
+uid = "M78720" 
+prediction <- predict(rec1, R[uid], n=100) ## you may change the model here
+as(prediction, "list")
+##chips and Instant Pastas are the items and they are showing now in recommendation items.
+```
+
+
+```{r}
+####
+M36702 <- input[input$Member == 'M36702',]
+head(M36702,19)
+dim(M36702)
+M36702 <- M36702[M36702$Description != 'Banana' & M36702$Description != 'Face Wash',]  
+dim(M36702)
+
+##Banana and Face Wash will be removed
 
 
 ```
 
 ```{r}
+###deleting rows of M36702 from input datASET
+input <-  input[input$Member != 'M36702', ]
+dim(input)
 
 
 ```
 
 
 ```{r}
-
+input <- rbind(input,M36702)
+dim(input)
+#testing it
+members_matrix <- as.matrix(acast(input, Member~Description, fun.aggregate = mean))
+head(members_matrix)
 
 ```
+
+```{r}
+R <- as(members_matrix, "realRatingMatrix")
+rec1 = Recommender(R, method="UBCF") ## User-based collaborative filtering
+uid = "M36702" 
+prediction <- predict(rec1, R[uid], n=100) ## you may change the model here
+as(prediction, "list")
+###Banana and face wash are present
+
+```
+
 
 
 
