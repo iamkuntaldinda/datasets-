@@ -228,6 +228,13 @@ df <- fastDummies::dummy_cols(df, select_columns = "MTONGUE")
 
 ###
 
+###removing dummy columns from each of the category
+df$Gender_T <- NULL
+df$OCCU_T <-  NULL
+df$RELIGN_M <- NULL
+df$CASTE_ST <- NULL
+df$MTONGUE_H<- NULL
+
 write.csv(df,'sampleset.csv')
 
 
@@ -238,7 +245,7 @@ write.csv(df,'sampleset.csv')
 ```{r }
 ###backward using regsubsets
 require(leaps)
-reg2 = regsubsets(TOTAL~AGE+INCOME+Gender_F+Gender_T+OCCU_C+OCCU_A+OCCU_H+OCCU_B+OCCU_U+RELIGN_H+RELIGN_C+RELIGN_M + CASTE_SC +CASTE_OT+CASTE_ST+MTONGUE_T+MTONGUE_K+MTONGUE_U+MTONGUE_D,data = df,nbest=10,method = "backward")
+reg2 = regsubsets(TOTAL~AGE+INCOME+Gender_F+OCCU_C+OCCU_A+OCCU_H+OCCU_B+OCCU_U+RELIGN_H+RELIGN_C + CASTE_SC +CASTE_OT+MTONGUE_T+MTONGUE_K+MTONGUE_U+MTONGUE_D,data = df,nbest=10,method = "backward")
 
 summary(reg2)
 
@@ -250,7 +257,7 @@ plot(reg2,scale="r2")
 ```{r }
 require(leaps)
 
-reg <- regsubsets(TOTAL~AGE+INCOME+Gender_F+Gender_T+OCCU_C+OCCU_A+OCCU_H+OCCU_B+OCCU_U+RELIGN_H+RELIGN_C+RELIGN_M + CASTE_SC +CASTE_OT+CASTE_ST+MTONGUE_T+MTONGUE_K+MTONGUE_U+MTONGUE_D,data = df, nbest=10)
+reg <- regsubsets(TOTAL~AGE+INCOME+Gender_F+OCCU_C+OCCU_A+OCCU_H+OCCU_B+OCCU_U+RELIGN_H+RELIGN_C + CASTE_SC +CASTE_OT+MTONGUE_T+MTONGUE_K+MTONGUE_U+MTONGUE_D,data = df, nbest=10)
 
 summary(reg)
 
@@ -268,6 +275,9 @@ summary(full_model)
 m3 <- lm(TOTAL ~ AGE:Gender_F:CASTE_SC + CASTE_SC  + MTONGUE_K:OCCU_H +RELIGN_H:OCCU_B:AGE+MTONGUE_U+ CASTE_OT+ Gender_F+ CASTE_OT:Gender_F+ OCCU_U:MTONGUE_U  + OCCU_C:MTONGUE_U:CASTE_SC ,data = df)
 summary(m3)
 
+##Intercept of 43.25 is the mean total score of students who are Males, have mtongue as  H, occupation as T, religion as M, caste as ST
+###Effect of  Mtongue_K and Occu_H interact, change in MTONGUE_K effect if someone has occupation of H and it is 27.70 times.
+###Total score will increase by 7.3082 if there is 1 unit increase in count of female.
 ```
 ##model interpretation
 
@@ -281,8 +291,8 @@ summary(m3)
 
 ```{r}
 ##Partial F-test.
-
-
+###It shows that reduced model and full model are not same and there is decrease in RSS in huge model and it is significant.
+anova(full_model,m3)
 ###
 ```
 
@@ -341,7 +351,7 @@ qqline(rstandard(m3))
 
 ```{r }
 ##vif test
-
+###Caste_sc , Gender_F:CASTE_OT, CASTE_OT and Gender_F  have vif greater than 10 , it indicates multicollinearity between them. and variation in total score is 25.15 times higher than when it is taken alone in model.
 vif(m3)
 
 ```
@@ -399,18 +409,6 @@ plot(cooksd, pch="*", cex=2, main="Influential Obs by Cooks distance")
 
 ```
 
-
-
-```{r }
-#h signifies the average hat value (k+1)/n
-
-abline(h = 4*mean(cooksd, na.rm=T), col="red")
-
-# add labels
-
-text(x=1:length(cooksd)+1, y=cooksd, labels=ifelse(cooksd>4*mean(cooksd, na.rm=T),names(cooksd),""), col="red")
-
-```
 
 
 
