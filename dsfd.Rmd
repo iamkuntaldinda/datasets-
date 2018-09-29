@@ -1,5 +1,6 @@
 ---
-title: "sa2"
+title: "SA-2 GROUP ASSIGNMENT"
+Author: "Vineet Kapoor"- 11910076, Balaji Venktesh -119100 , Gireesh Sundaram - 119100
 output: html_document
 ---
 
@@ -12,10 +13,6 @@ knitr::opts_chunk$set(echo = TRUE)
 This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
 
 When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-## Including Plots
-
-
 
 
 ```{r }
@@ -54,10 +51,9 @@ sapply(data, function(x) sum(is.na(x)))
 
 ```
 
+cleaning data
 
 ```{r }
-####cleaning data
-
 
 require(dplyr)
 
@@ -89,10 +85,10 @@ head(df)
 
 ```
 
-
+changing datatypes
 
 ```{r }
-##changing datatypes
+
 
 df$Gender <- as.factor(df$Gender)
 df$AGE <- as.numeric(df$AGE)
@@ -105,10 +101,10 @@ df$OCCU <- as.factor(df$OCCU)
 ```
 
 
-
+VISUALIZING
 ```{r }
 
-###VISUALIZING
+
 
 library(ggplot2)
 
@@ -151,10 +147,8 @@ qplot(TOTAL, data=df, geom="density", alpha=I(.5))  ##left skew
 ```
 
 
-
+boxplot
 ```{r }
-
-###boxplot
 
 boxplot(TOTAL~Gender,data=df)
 
@@ -174,9 +168,9 @@ boxplot(TOTAL~Gender,data=df)
 
 ```
 
+Outlier Treatment
 
 ```{r }
-###outlier treatment
 
 df$AGE[df$AGE >= 50]  <- NA
 
@@ -189,7 +183,7 @@ boxplot(INCOME~Gender,data=df)
 ```
 
 
-
+Correlation matrix
 ```{r }
 ####correlation matrix
 
@@ -207,10 +201,9 @@ require(corrplot)
 corrplot::corrplot(c,method = "color")
 ```
 
-
+creating dummy variables
 
 ```{r }
-##creating dummy variables
 
 #install.packages("fastDummies")
 
@@ -226,9 +219,8 @@ df <- fastDummies::dummy_cols(df, select_columns = "CASTE")
 
 df <- fastDummies::dummy_cols(df, select_columns = "MTONGUE")
 
-###
 
-###removing dummy columns from each of the category
+#removing dummy columns from each of the category
 df$Gender_T <- NULL
 df$OCCU_T <-  NULL
 df$RELIGN_M <- NULL
@@ -241,9 +233,9 @@ write.csv(df,'sampleset.csv')
 ```
 
 
-
+backward using regsubsets
 ```{r }
-###backward using regsubsets
+
 require(leaps)
 reg2 = regsubsets(TOTAL~AGE+INCOME+Gender_F+OCCU_C+OCCU_A+OCCU_H+OCCU_B+OCCU_U+RELIGN_H+RELIGN_C + CASTE_SC +CASTE_OT+MTONGUE_T+MTONGUE_K+MTONGUE_U+MTONGUE_D,data = df,nbest=10,method = "backward")
 
@@ -263,15 +255,19 @@ summary(reg)
 
 ```
 
+
+randomly modelling
 ```{r }
-####randomly modelling
+
 full_model <- lm(TOTAL ~. ,data = df)
 summary(full_model)
 ```
 
 
-```{r }
+
 ####randomly modelling
+
+```{r }
 m3 <- lm(TOTAL ~ AGE:Gender_F:CASTE_SC + CASTE_SC  + MTONGUE_K:OCCU_H +RELIGN_H:OCCU_B:AGE+MTONGUE_U+ CASTE_OT+ Gender_F+ CASTE_OT:Gender_F+ OCCU_U:MTONGUE_U  + OCCU_C:MTONGUE_U:CASTE_SC ,data = df)
 summary(m3)
 
@@ -281,19 +277,13 @@ summary(m3)
 ```
 ##model interpretation
 
-```{r}
-####randomly modelling
-#m3 <- lm(TOTAL ~ AGE:Gender_F:CASTE_SC + CASTE_SC  + MTONGUE_K:OCCU_H +RELIGN_H:OCCU_B:AGE+MTONGUE_U+ CASTE_OT+ Gender_F+ CASTE_OT:Gender_F+ OCCU_U:MTONGUE_U  + OCCU_C:MTONGUE_U:CASTE_SC  ,data = df)
-#summary(m3)
 
-```
 
+Partial F-test.
+It shows that reduced model and full model are not same and there is decrease in RSS in huge model and it is significant.
 
 ```{r}
-##Partial F-test.
-###It shows that reduced model and full model are not same and there is decrease in RSS in huge model and it is significant.
 anova(full_model,m3)
-###
 ```
 
 
@@ -313,9 +303,9 @@ vcov(m3) # covariance matrix for model parameters
 ```
 
 
+Standardize
 
 ```{r }
-#### standardize
 #install.packages('lm.beta')
 library(lm.beta)
 lm.std.beta <- lm.beta(m3)
@@ -348,10 +338,10 @@ qqline(rstandard(m3))
 ```
 
 
+vif test
+Caste_sc , Gender_F:CASTE_OT, CASTE_OT and Gender_F  have vif greater than 10 , it indicates multicollinearity between them. and variation in total score is 25.15 times higher than when it is taken alone in model.
 
 ```{r }
-##vif test
-###Caste_sc , Gender_F:CASTE_OT, CASTE_OT and Gender_F  have vif greater than 10 , it indicates multicollinearity between them. and variation in total score is 25.15 times higher than when it is taken alone in model.
 vif(m3)
 
 ```
@@ -372,7 +362,7 @@ plot(k)
 
 
 ```{r }
-##forward selection method
+#forward selection method
 
 i <- ols_step_forward_p(m3)
 
@@ -384,15 +374,16 @@ plot(i)
 
 ```{r }
 
-##backward selection method
+#backward selection method
 
 j<-ols_step_backward_p(m3)
 
 ```
 
-```{r }
-#Cook's Distance:
 
+Cook's Distance:
+
+```{r }
 cooksd <- cooks.distance(m3)
 
 cooksd
@@ -464,17 +455,16 @@ ols_plot_resid_lev(m3)
 ```
 
 
-
-```{r }
-##DW test
+DurbinWatson test
 ###the value of statistic is  in normal range, and the we fail to reject the null hypothesis that there is slightly negative autocorrelation.
+```{r }
 car::durbinWatsonTest(m3)
 ```
 
 
 
 ```{r }
-###stepwise regression
+#stepwise regression
 fit_Step <- lm(TOTAL~AGE+INCOME+Gender_F+OCCU_C+OCCU_A+OCCU_H+OCCU_B+OCCU_U+RELIGN_H+RELIGN_C + CASTE_SC +CASTE_OT+MTONGUE_T+MTONGUE_K+MTONGUE_U+MTONGUE_D,data=df)
 
 step <- stepAIC(fit_Step, direction="both")
@@ -485,7 +475,7 @@ step$anova # display results
 
 
 ```{r }
-###backward elimination using stepaic
+#backward elimination using stepaic
 
 Model1=lm(TOTAL~AGE+INCOME+Gender_F+OCCU_C+OCCU_A+OCCU_H+OCCU_B+OCCU_U+RELIGN_H+RELIGN_C + CASTE_SC +CASTE_OT+MTONGUE_T+MTONGUE_K+MTONGUE_U+MTONGUE_D,data=df)
 
@@ -497,26 +487,144 @@ step <- stepAIC(Model1, direction="back")
 
 
 
+
+
+
+
+Question -2 
+Logistic regression using same dataset
 ```{r }
+
+head(df)
+dim(df)
+
+```
+
+
+###Creating new performance variable
+```{r }
+df$performance[df$TOTAL > 70] <- 1
+df$performance[df$TOTAL <= 70] <- 0
+dim(df)
+
+```
+
+
+Using almost 70% the data for sampling - training and testing samples.
+```{r }
+train <- df[1:700,]
+test <- df[701:992,]
+
+```
+
+
+seeing the class and checking if there is class imbalance or not
+```{r }
+table(train$performance)
+table(test$performance)
+```
+
+
+```{r }
+
+train <- as.data.frame(train)
+test <- as.data.frame(test)
+```
+
+Creating first model
+```{r }
+
+model1 <- glm(performance ~ AGE:Gender_F:CASTE_SC + CASTE_SC  + MTONGUE_K:OCCU_H +RELIGN_H:OCCU_B:AGE+MTONGUE_U+ CASTE_OT+ Gender_F+ CASTE_OT:Gender_F+ OCCU_U:MTONGUE_U  + OCCU_C:MTONGUE_U:CASTE_SC  ,data=train, family = binomial)
+summary(model1)
+
+```
+
+```{r }
+
+model2 <- glm(performance ~ CASTE_SC + OCCU_C + MTONGUE_U + OCCU_H:MTONGUE_K + OCCU_U:MTONGUE_U  + OCCU_C:MTONGUE_U:CASTE_SC  ,data=train, family = binomial)
+summary(model2)
+
+```
+
+
+Third model
+```{r }
+model3 <- glm(performance ~  CASTE_OT  + MTONGUE_T  + OCCU_C:MTONGUE_U:CASTE_SC  ,data=train, family = binomial)
+summary(model3)
 
 ```
 
 
 
+For model 1 , 
+p-value is less than 0.05 and it is significant, so reject null hypothesis and this model is goo for prediction as it has got least Deviance Residual
+```{r}
+1-pchisq(641.40-621.34,699-689)
+```
+
+for model 2
+```{r}
+1-pchisq(641.40-626.51,699-693)
+```
+
+Visualisation of variables with target variable
 ```{r }
+g <- ggplot(df, aes(performance,TOTAL))
+g + geom_bar(stat = "identity",aes(fill = Gender)) +coord_flip() 
+
+g <- ggplot(df, aes(performance,TOTAL))
+g + geom_bar(stat = "identity",aes(fill = CASTE)) +coord_flip() 
+
+g <- ggplot(df, aes(performance,TOTAL))
+g + geom_bar(stat = "identity",aes(fill = OCCU)) +coord_flip() 
+
+
+```
+
+Predicting values using model1, class 0 - 236 values, Class 1  - 56 values
+```{r }
+p <- predict(model1,test, type = "response")
+fit <- ifelse(p > 0.20,1,0)
+table(fit)
 
 ```
 
 
-
+Variables Importance and their estimates can be find out using this.
 ```{r }
+library(broom)
+tidy(model1)
 
 ```
 
-
-
+McFladden R-square shows that the R-square values of the 3 diffrent models are vary low and model1 has 0.03 R- square
 ```{r }
+require(pscl)
+list(MODEL1 = pscl::pR2(model1)["McFadden"],
+     MODEL2 = pscl::pR2(model2)["McFadden"],
+     MODEL3 = pscl::pR2(model3)["McFadden"])
+```
 
+ROC curve for the model1 and it is the plot between True positive rate and False positive rate.AUC of this curve is near to 0.5 
+```{r }
+library(pROC)
+roccurve <- roc(test$performance ~ p)
+plot(roccurve)
+```
+
+
+Hosmer - lemeshow test shows that the model is logistic regression model as Null hypothesis shows that model follows Logistic regression model...
+```{r }
+library(generalhoslem)
+logitgof(test$performance, p)
+```
+
+Confusion matrix shows that 15% of the observation fall in Type -1 error and 
+13 % observations are in Type -2 error. 
+only 4% values predicted are high achievers and 67% are true negative values means low achievers. 
+```{r }
+c = table(test$performance, p > 0.20) %>% prop.table()
+c
 ```
 
 ```{r }
