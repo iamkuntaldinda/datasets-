@@ -1,0 +1,91 @@
+History of AI
+Modern era of AI
+How is this era of AI different?
+Transformative Changes
+Role of Machine learning & Deep Learning in AI
+Hardware for AI (CPU vs. GPU vs. TPU)
+Software Frameworks for AI
+Deep Learning Frameworks for AI
+Key Industry applications of AI
+Overview of important python packages for Deep Learning
+What is Tensor Flow?
+Tensor Flow code-basics
+Graph Visualization
+Constants, Placeholders, Variables
+Tensorflow Basic Operations
+Linear Regression with Tensor Flow
+Logistic Regression with Tensor Flow
+K Nearest Neighbor algorithm with Tensor Flow
+K-Means classifier with Tensor Flow
+Random Forest classifier with Tensor Flow
+Quick recap of Neural Networks
+Activation Functions, hidden layers, hidden units
+Illustrate & Training a Perceptron
+Important Parameters of Perceptron
+Understand limitations of A Single Layer Perceptron
+Illustrate Multi-Layer Perceptron
+Back-propagation – Learning Algorithm
+Understand Back-propagation – Using Neural Network Example
+TensorBoard
+What is Deep Learning Networks?
+Why Deep Learning Networks?
+How Deep Learning Works?
+Feature Extraction
+Working of Deep Network
+Training using Backpropagation
+Variants of Gradient Descent
+Types of Deep Networks
+Feed forward neural networks (FNN)
+Convolutional neural networks (CNN)
+Recurrent Neural networks (RNN)
+Generative Adversal Neural Networks (GAN)
+Restrict Boltzman Machine (RBM)
+Introduction to Convolutional Neural Networks
+CNN Applications
+Architecture of a Convolutional Neural Network
+Convolution and Pooling layers in a CNN
+Understanding and Visualizing a CNN
+Transfer Learning and Fine-tuning Convolutional Neural Networks
+Intro to RNN Model
+Application use cases of RNN
+Modelling sequences
+Training RNNs with Backpropagation
+Long Short-Term Memory (LSTM)
+Recursive Neural Tensor Network Theory
+Recurrent Neural Network Model
+What is Restricted Boltzmann Machine?
+Applications of RBM
+Collaborative Filtering with RBM
+Introduction to Autoencoders & Applications
+Understanding Autoencoders
+Define TFlearn
+Composing Models in TFlearn
+Sequential Composition
+Functional Composition
+Predefined Neural Network Layers
+What is Batch Normalization
+Saving and Loading a model with TFlearn
+Customizing the Training Process
+Using TensorBoard with TFlearn
+Use-Case Implementation with TFlearn
+Define Keras
+How to compose Models in Keras
+Sequential Composition
+Functional Composition
+Predefined Neural Network Layers
+What is Batch Normalization
+Saving and Loading a model with Keras
+Customizing the Training Process
+Using TensorBoard with Keras
+Use-Case Implementation with Keras
+Intuitively building networks with Keras
+Computer Vision
+Text Data Processing
+Image processing
+Audio & video Analytics
+Internet of things (IOT)
+Computer Vision
+Text Data Processing
+Image processing - PNG, PDF,JPEG, JPG etc.
+Speech analytics - Speech to text / Voice tonality
+Internet of Things - IOT
