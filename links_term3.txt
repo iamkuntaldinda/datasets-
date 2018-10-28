@@ -106,3 +106,26 @@ http://scikit-learn.org/stable/auto_examples/classification/plot_lda_qda.html#sp
 http://www.sthda.com/english/articles/36-classification-methods-essentials/146-discriminant-analysis-essentials-in-r/
 
 https://rpubs.com/Nolan/298913
+
+https://medium.com/data-science-group-iitr/k-nearest-neighbors-knn-500f0d17c8f1
+https://www.youtube.com/watch?v=7VeUPuFGJHk&index=15&list=PLblh5JKOoLUICTaGLRoHQDuF_7q2GfuJF
+http://www.sawtoothsoftware.com/academics/teaching-aids/113-support/videos/1673-teaching-aids-presentation-2
+https://medium.com/deep-math-machine-learning-ai/chapter-4-decision-trees-algorithms-b93975f7a1f1
+
+https://medium.com/@rishabhjain_22692/decision-trees-it-begins-here-93ff54ef134
+
+http://dataaspirant.com/2017/01/30/how-decision-tree-algorithm-works/
+
+http://www.learnbymarketing.com/481/decision-tree-flavors-gini-info-gain/
+https://medium.com/@iamHarin/k-nearest-neighbors-classifier-from-scratch-c5de2443bc5e
+https://www.listendata.com/2017/12/k-nearest-neighbor-step-by-step-tutorial.html
+https://towardsdatascience.com/implementing-k-nearest-neighbors-with-scikit-learn-9e4858e231ea
+https://www.quantinsti.com/blog/machine-learning-k-nearest-neighbors-knn-algorithm-python
+
+
+
+
+
+
+
+
