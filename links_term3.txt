@@ -3,6 +3,12 @@ cafactorialdesign
 caimportance 
 cautilities
 
+https://towardsdatascience.com/fraud-detection-under-extreme-class-imbalance-c241854e60c
+https://towardsdatascience.com/detecting-financial-fraud-using-machine-learning-three-ways-of-winning-the-war-against-imbalanced-a03f8815cce9
+https://medium.com/@ManojGuptaGrid/machine-learning-for-fraud-detection-e6e8efe77f37
+https://medium.com/@EbubekirBbr/fraud-detection-with-ml-124db08de1bb
+https://blog.usejournal.com/fraud-detection-using-data-analytics-5037cf4244ehttps://help.shopify.com/en/manual/orders/fraud-analysis
+https://machinelearningmedium.com/2018/05/02/anomaly-detection/
 
 https://www.kaggle.com/hendraherviawan/customer-segmentation-using-rfm-analysis-r#
 
