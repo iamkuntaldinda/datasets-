@@ -1,3 +1,6 @@
+https://rpubs.com/dmelichov/churn
+https://towardsdatascience.com/fraud-detection-under-extreme-class-imbalance-c241854e60c
+https://www.datascience.com/blog/intro-to-predictive-modeling-for-customer-lifetime-value
 https://www.analyticsvidhya.com/blog/2017/06/word-embeddings-count-word2veec/
 https://www.analyticsvidhya.com/blog/2014/11/text-data-cleaning-steps-python/
 https://www.analyticsvidhya.com/blog/2018/10/interpret-random-forest-model-machine-learning-programmers/
