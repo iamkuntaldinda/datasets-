@@ -1,3 +1,5 @@
+
+https://israelg99.github.io/2017-03-22-Vector-Representations-of-Words/
 https://rpubs.com/dmelichov/churn
 https://towardsdatascience.com/fraud-detection-under-extreme-class-imbalance-c241854e60c
 https://www.datascience.com/blog/intro-to-predictive-modeling-for-customer-lifetime-value
