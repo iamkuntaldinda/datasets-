@@ -1,8 +1,14 @@
+
+
 casegmentation
 cafactorialdesign
 caimportance 
 cautilities
 
+http://leeds-faculty.colorado.edu/ysun/MKTG4825_files/CA_in_MS_Excel.pdf
+https://www.sawtoothsoftware.com/download/techpap/caexcel.pdf
+
+http://faculty.washington.edu/sundar/NPM/CONJOINT-ProductDesign/Conjoint%20Tutorial.pdf
 https://towardsdatascience.com/fraud-detection-under-extreme-class-imbalance-c241854e60c
 https://towardsdatascience.com/detecting-financial-fraud-using-machine-learning-three-ways-of-winning-the-war-against-imbalanced-a03f8815cce9
 https://medium.com/@ManojGuptaGrid/machine-learning-for-fraud-detection-e6e8efe77f37
