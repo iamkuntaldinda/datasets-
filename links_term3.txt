@@ -1,5 +1,25 @@
 
 
+
+
+https://www.datanovia.com/en/lessons/clara-in-r-clustering-large-applications/
+https://stat.ethz.ch/R-manual/R-devel/library/cluster/html/pam.html
+https://www.datanovia.com/en/lessons/k-medoids-in-r-algorithm-and-practical-examples/
+https://rpubs.com/Nolan/298913
+https://www.statmethods.net/advstats/discriminant.html
+https://stat.ethz.ch/R-manual/R-devel/library/MASS/html/lda.html
+www.sthda.com/english/articles/36-classification-methods-essentials/146-discriminant-analysis-essentials-in-r/
+https://www.displayr.com/linear-discriminant-analysis-in-r-an-introduction/
+https://www.displayr.com/linear-discriminant-analysis-in-r-an-introduction/
+https://www.r-bloggers.com/computing-and-visualizing-lda-in-r/
+https://www.r-bloggers.com/computing-and-visualizing-lda-in-r/
+https://www.kaggle.com/eliasdabbas/extract-entities-from-social-media-posts#
+https://www.dmnews.com/customer-experience/article/13039104/case-study-la-quinta-narrows-target-to-boost-guest-loyalty
+www.brucehardie.com/notes/022/RFM_summary_in_Excel.pdf
+https://www.kaggle.com/hendraherviawan/customer-segmentation-using-rfm-analysis-r#
+
+
+
 casegmentation
 cafactorialdesign
 caimportance 
