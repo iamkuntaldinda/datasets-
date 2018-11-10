@@ -1,7 +1,13 @@
 
 
 
+https://skimgroup.com/methodologies/conjoint-analysis/adaptive-conjoint-analysis-aca/
+https://skimgroup.com/methodologies/conjoint-analysis/menu-based-choice-modeling-mbc/
+https://skimgroup.com/methodologies/conjoint-analysis/choice-based-conjoint-cbc/
+http://www.statsoft.com/Textbook/ANOVA-MANOVA
+http://www.statsoft.com/Textbook/Classification-and-Regression-Trees
 
+https://skimgroup.com/methodologies/maximum-difference-scaling-maxdiff/
 https://www.datanovia.com/en/lessons/clara-in-r-clustering-large-applications/
 https://stat.ethz.ch/R-manual/R-devel/library/cluster/html/pam.html
 https://www.datanovia.com/en/lessons/k-medoids-in-r-algorithm-and-practical-examples/
