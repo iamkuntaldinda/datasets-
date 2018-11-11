@@ -1,5 +1,9 @@
 
-
+https://github.com/Priya997/SKF-Chatbot/blob/master/Basic_Approach/notebook/Intent_classifier.ipynb
+https://towardsdatascience.com/multi-label-intent-classification-1cdd4859b93
+https://github.com/Priya997/SKF-Chatbot/blob/master/Notebooks/implementing%20multiclass.ipynb
+https://scikit-learn.org/stable/modules/svm.html
+http://www.statsoft.com/Textbook/ANOVA-MANOVA
 
 https://skimgroup.com/methodologies/conjoint-analysis/adaptive-conjoint-analysis-aca/
 https://skimgroup.com/methodologies/conjoint-analysis/menu-based-choice-modeling-mbc/
