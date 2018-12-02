@@ -1,6 +1,17 @@
 # Count Data Models in R
 # Copyright 2013 by Ani Katchova
 
+https://www.kaggle.com/amyewa/titantic-survival-data-exploration
+https://rstudio-pubs-static.s3.amazonaws.com/241333_e3e176ecc7a44094a6bba75899a88f72.html
+https://www.r-bloggers.com/survival-analysis-1/
+https://stat.ethz.ch/R-manual/R-devel/library/stats/html/glm.html
+https://docs.google.com/file/d/0BwogTI8d6EEibDVxakozYVdZc0k/edit
+https://sites.google.com/site/econometricsacademy/econometrics-models/survival-analysis
+https://stats.idre.ucla.edu/r/dae/poisson-regression/
+https://stats.idre.ucla.edu/r/dae/zero-truncated-negative-binomial/
+https://stats.idre.ucla.edu/r/dae/zero-truncated-poisson/
+
+
 # install.packages("MASS")
 library(MASS)
 # install.packages("pscl")
