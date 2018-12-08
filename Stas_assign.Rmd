@@ -1,0 +1,524 @@
+---
+title: "Statistics_Assignment"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r}
+#install.packages('')
+require(MASS)
+require(pscl)
+require(AER)
+require(psych)
+require(foreign)
+require(mice)
+require(nnet)
+require(ggplot2)
+require(caret)
+require(scales)
+require(DataExplorer)
+require(data.table)
+require(VIM)
+
+
+```
+
+1. Obtain summary statistics for the two whale calves, Hudson and Casey and make comparative statements.
+
+```{r}
+whaledata <- read.csv('whale.csv')
+whaled <- whaledata
+
+
+```
+
+
+```{r}
+
+whaledata <- na.omit(whaledata)
+head(whaledata)
+
+```
+
+
+```{r}
+describeBy(whaledata[,c(1,2,3,5,6,7)],whaledata$Daytime.Hudson)
+
+```
+
+
+```{r}
+as.factor(whaledata$Daytime.Hudson) -> whaledata$Daytime.Hudson
+as.factor(whaledata$Daytime.Casey) -> whaledata$Daytime.Casey
+
+```
+2. Make comparative statements on the underlying probability distributions of the number of lockons of the two calves. With justification, propose appropriate regression model for number of lockons for each data set.
+
+
+```{r}
+
+require(Hmisc)
+
+ggplot(whaledata, aes(whaledata$Lockons.Casey, stat(density),colour = Daytime.Casey)) +
+  geom_freqpoly(stat = "bin",position = "identity",bins = 30)+ ggtitle("Count of Lockons for Casey")
+ggplot(whaledata, aes(whaledata$Lockons.Hudson, fill = Daytime.Hudson)) +
+  geom_histogram(binwidth=5, position="dodge")+ ggtitle("Count of Lockons for Hudson")
+plot(density(whaledata$Lockons.Casey))
+plot(density(whaledata$Lockons.Hudson))
+
+
+
+```
+
+The Distribution is right-skewed for both calves. For Hudson, it is more skewed.  
+Appropriate regression model for both is Poisson regression model as the distribution follows poisson distribution
+Assumptions of Poisson regression:
+
+Independence: Events must be independent 
+Homogeneity: The mean number is assumed to be the same for all groups.
+Time period (or space) must be fixed
+
+
+
+
+3. For each data set, construct the regression model you have proposed in (2) above for the number of lockons in each period as a function of time, number of nursing bouts, and time of the day. Interpret your results.
+```{r}
+
+hudson_model <- glm(Lockons.Hudson ~ Period.Hudson+Daytime.Hudson + Bouts.Hudson, family = 'poisson',data=whaledata)
+summary(hudson_model)
+
+
+```
+Interpretation::
+1. For each Hudson whales in daytime
+the Number of times the calf attached itself to the mother while suckling milk from a mammary gland decreases by 5.7%
+
+2. For each unit increase in (a successful nursing episode where milk was obtained from the mother),the  the Number of times the calf attached itself to the mother while suckling milk from a mammary gland increases by 12.2 %
+
+```{r}
+anova(hudson_model)
+
+```
+##Bouts -(a successful nursing episode where milk was obtained from the mother) decrease  the deviance by 634.79 and residual deviance decreases to 559.99, it helps to fit the model more relatively to other variables in te model
+
+
+
+```{r}
+with(hudson_model, cbind(res.deviance = deviance, whaledata = df.residual,
+                    p = pchisq(deviance, df.residual, lower.tail=FALSE)))
+
+```
+p- value shows the model has not fitted and there is overdispersion or underdispersion or any other model is needed. As per p-value , we will reject the null hypothesis that tells that model has fitted. using chi-quare test
+
+
+```{r}
+casey_model <- glm(Lockons.Casey ~ Period.Casey+Bouts.Casey+Daytime.Casey, family = 'poisson', data=whaledata)
+summary(casey_model)
+
+```
+The Casey whale also has high residual deviance. with each uit increase in Bouts, the number of Lockons increase by 9.1%
+
+```{r}
+anova(casey_model)
+
+```
+Anova test shows that Bouts and Period has decreased the residual deviance.
+
+
+```{r}
+with(casey_model, cbind(res.deviance = deviance, whaledata = df.residual,
+                     p = pchisq(deviance, df.residual, lower.tail=FALSE)))
+
+```
+
+p-value shows that model has not fitted as p-value is highly significant.
+
+
+```{r}
+# Test for overdispersion (dispersion and alpha parameters) from AER package
+
+dispersiontest(hudson_model, trafo=1)
+dispersiontest(casey_model, trafo=1)
+
+```
+4.1. Do the variables provide predictive power? Justify.
+
+Not all variables provide predictive power. Only, Bouts Variable for both Hudson and Casey whales provide predictive power
+
+
+4.2. How would you interpret the coefficient for time period for the model? 
+For Hudson poisson model: With increase in the period , the number of lockons decreases by very less amount.
+
+For Casey  Poisson model:With increase in the period , the number of lockons decreases by 0.11%
+
+4.3. Does this model suffer from over dispersion? Justify with appropriate analysis. If the selected model suffers from over dispersion, propose and fit an alternative model which will take care of over dispersion.
+Yes both models have overdispersion and we can test it using oversipersion test, Variance is not equal to mean, alpha is greater than zero for both models and p-value is significant.
+
+Negative Binomial model can take care of over-dispersion. 
+
+4.4. Does this alternative model have different implications than the initial model you selected in (3) above? Is it a better fit to the data? Justify your answer with proper analysis.
+
+Yes, with chi-square test, it shows that p-value is less significant and model doesn't fit the data very well.
+
+```{r}
+hud_binomial <- glm.nb(Lockons.Hudson ~ Period.Hudson+Daytime.Hudson + Bouts.Hudson,data = whaledata)
+summary(hud_binomial)
+
+```
+
+
+```{r}
+anova(hud_binomial)
+
+```
+Residual deviance decreases a lot with Negative Binomial model.
+
+```{r}
+par(mfrow=c(1,1))
+par(mfrow=c(2,2))
+plot(hud_binomial)
+
+```
+
+
+```{r}
+with(hud_binomial,cbind(res.deviance=deviance, whaledata=df.residual,
+                     p=pchisq(deviance, df.residual, lower.tail=FALSE)))
+```
+We fail to reject null hypothesis, and model has fitted the data better than poisson regression model.
+
+```{r}
+
+casey_binomial <- glm.nb(Lockons.Casey ~ Period.Casey+Bouts.Casey+Daytime.Casey,  data=whaledata)
+summary(casey_binomial)
+
+```
+
+
+```{r}
+
+anova(casey_binomial)
+plot(casey_binomial)
+
+
+```
+
+
+```{r}
+
+with(casey_binomial,cbind(res.deviance=deviance, whaledata=df.residual,
+                    p=pchisq(deviance, df.residual, lower.tail=FALSE)))
+```
+
+
+```{r}
+#2nd question:
+
+require(fastDummies)
+require(ggplot2)
+require(magrittr)
+
+
+```
+
+
+```{r}
+leukemia <- read.csv('leukemia.csv')
+leukemia$sex <- as.factor(leukemia$sex)
+dim(leukemia)
+str(leukemia)
+```
+
+
+```{r}
+leukemia <- fastDummies::dummy_cols(leukemia, select_columns = "sex")
+colnames(leukemia)
+
+```
+
+
+```{r}
+leukemia$status <- as.factor(leukemia$status)
+leukemia$Rx <- as.factor(leukemia$Rx)
+
+```
+
+
+```{r}
+
+colnames(leukemia)
+str(leukemia)
+
+
+```
+
+
+```{r}
+describeBy(leukemia,leukemia$Rx)
+```
+
+
+```{r}
+
+leukemia %>% ggplot(aes(x = Rx, y = survival.times, fill = Rx))+
+  geom_boxplot()+facet_wrap(~status) +ggtitle("Survival times for two failure status")
+
+```
+
+
+```{r}
+
+##Removing Dummy variables
+
+leukemia$sex <- NULL
+leukemia$sex_1 <- NULL
+
+
+```
+
+
+
+
+```{r}
+attach(leukemia)
+
+# Define variables 
+time <- survival.times
+event <- status
+Y <- cbind(logWBC,sex_0)
+group <- Rx
+event <- as.numeric(event)
+
+```
+
+
+```{r}
+
+# Kaplan-Meier non-parametric analysis by group
+km_model <- survfit(Surv(time, event) ~ group)
+summary(km_model)
+
+
+```
+
+
+```{r}
+km_model$surv
+par(
+  col.main="red", col.lab="blue", col.sub="black",
+  font.main=3, font.lab=3, font.sub=4,
+  cex.main=3, cex.lab=1.2, cex.sub=1.2
+)
+
+
+
+```
+
+
+```{r}
+
+plot(km_model, xlab="Time", ylab="Survival Probability",col = "black")
+
+
+
+```
+
+
+```{r}
+# Nelson-Aalen non-parametric analysis
+na_model <- survfit(coxph(Surv(time,event)~Y), type="aalen")
+summary(na_model)
+plot(na_model, xlab="Time", ylab="Survival Probability")
+
+```
+
+
+```{r}
+
+# Kaplan-Meier non-parametric analysis
+km_model <- survfit(Surv(time,event) ~ 1)
+summary(km_model)
+plot(km_model, xlab="Time", ylab="Survival Probability")
+```
+
+
+```{r}
+g <- leukemia$logWBC
+log_3_classes <- ifelse((g>=0) & (g<=2.30),"low",
+                 ifelse((g>=2.31) & (g<3),"medium",
+                        ifelse((g>=3),"high","n")))
+
+```
+
+
+```{r}
+leukemia$logWBC <- log_3_classes
+
+
+```
+
+
+```{r}
+# Kaplan-Meier non-parametric analysis by  Logwbc group
+km_logwbc <- survfit(Surv(time, event) ~ g)
+summary(km_logwbc)
+plot(km_logwbc, xlab="Time", ylab="Survival Probability")
+```
+
+
+```{r}
+# Cox proportional hazard model - coefficients and hazard rates
+coxph_model <- coxph(Surv(time,event) ~ Y, method="breslow")
+summary(coxph_model)
+
+
+```
+
+
+```{r}
+# Exponential model coefficients
+
+exponential_model <- survreg(Surv(time,event) ~ Y, dist="exponential")
+summary(exponential_model)
+
+```
+
+
+```{r}
+class_data <- read.csv('class_data.csv')
+class_datab <- class_data
+dim(class_data)
+
+```
+
+
+```{r}
+
+summary(class_data)
+plot_missing(class_data) # 5 variables have Missing values
+plot_histogram(class_data)  #to plot histogram of continuous variables
+plot_density(class_data)    #to plot density plot of variable
+
+
+```
+
+
+```{r}
+class_data_clean <- na.omit(class_data)
+sapply(class_data, function(x) sum(is.na(x)))
+
+```
+
+
+```{r}
+colnames(class_data)
+#class_data <- fastDummies::dummy_cols(class_data, select_columns = "Sex")
+#class_data$Sex <- NULL
+#class_data$Sex_0 <- NULL
+```
+
+
+```{r}
+class_data_model <- lm(Weight ~ Age + Height +Sex_1, data = class_data)
+summary(class_data_model)
+
+```
+
+
+```{r}
+
+marginplot(class_datab[c(1,2)])
+
+class_data.mis <- class_datab[,-c(3)]
+
+imputed_values <- mice(class_data.mis, m=5, maxit = 10, method = 'pmm', seed = 300)
+```
+
+
+```{r}
+summary(imputed_values)
+imputed_values$predictorMatrix
+imputed_values$chainVar
+imputed_values$nmis
+```
+
+
+```{r}
+c_model <- complete(imputed_Data,4)
+c_model$Sex <- class_datab$Sex
+c_model <- fastDummies::dummy_cols(c_model, select_columns = "Sex")
+c_model$Sex <- NULL
+c_model$Sex_0 <- NULL
+c_model
+
+
+```
+
+
+```{r}
+
+m1 <- lm(Weight ~  Sex_1 + Age + Height ,data = c_model)
+summary(m1)
+
+
+```
+
+
+```{r}
+
+#build predictive model
+model_combined <- with(imputed_values,lm(Weight ~ Age + Height))
+summary(pool(model_combined))
+summary(model_combined)
+
+
+```
+
+
+```
+
+
+```{r}
+
+
+
+```
+
+
+```{r}
+
+
+
+```
+
+
+```{r}
+
+
+
+```
+
+
+```{r}
+
+
+
+```
+
+
+```{r}
+
+
+
+```
+
+
