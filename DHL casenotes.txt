@@ -1,0 +1,50 @@
+DHL - goal of carbon efficiency
+
+
+production of LCD in ODM in china to Distribution Cente  in shanghai
+
+CEC allocated budget of CNY 3 billion -- prod & shipping of 920000 units -  LCD 42 + 530000 of LCD 32
+
+constraints -  economy of scale + prod capacity + supplier risk mgmt
+
+total -  7 ODMs
+
+ODM1 , ODM2  --  LCD 32 and LCD 42
+
+rest of five produce LCD 42
+
+minimum order of 200000 to any ODM - constraint1
+max order  -  600000 - constraint2
+
+if ODM 1 and ODM 2 are chose  -  prod capacity  is 600000 of LCD 32 and 600000 LCD 42 - constraint 3
+
+
+****ODM1 and ODM2 can produce 600000 of LCD 32 and LCD 42
+TRANSPORT MODES - REGULAR AIR, AIR EXPRESS + ROAD + ROAD LTLROAD  N/W + RAIL + WATER.....
+
+ODM5 - shipping to raod + ROAD ltl + ROAD N/W  - it is near to DC
+ODM6  = TAIWAN -- SHIPPING BY AIR AND WATER ONLY....
+
+
+***see carbon emission rates  for all shipping modes.. 
+
+weight   -  LCD 32 =   16.5 KG AND LCD42 = 22 KG
+
+
+SHIPPING TIME  ----
+VARY FROM 2 DAYS - AIR EXPRESS TO 10 DAYS -  WATER 
+
+
+DHL need to send min products 
+**no constraint by shipment through water
+
+if you reduce CO2 emission - it incur tax incentive - brand value of LCD will rise
+10 % increase in budget will be there.....
+
+objective - 
+find reduction in CO2 emission through 3.3 billion budget for manufacturing and shipping TVs from ODM to  DC
+
+
+optimize the transportation , support carbon standards
+
+
