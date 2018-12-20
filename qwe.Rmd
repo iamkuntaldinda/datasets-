@@ -1,0 +1,363 @@
+---
+title: "QWE"
+output: html_document
+Author : 
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+
+## Including Plots
+
+```{r}
+library(readxl)
+QWE_Excel_1_ <- read_excel("QWE-Excel (1).xlsx",sheet = "Case Data")
+
+class(QWE_Excel_1_)
+```
+
+
+```{r}
+qwe <- QWE_Excel_1_ 
+
+library(mice)
+library(nnet)
+library(caret)
+library(DataExplorer)
+#install.packages('scales')
+library(scales)
+#install.packages('data.table')
+library(data.table)
+require(ggplot2)
+```
+
+
+
+```{r}
+summary(QWE_Excel_1_)
+plot_str(QWE_Excel_1_)  #we have all variable int tye
+plot_missing(QWE_Excel_1_) # 5 variables have Missing values
+plot_histogram(QWE_Excel_1_)  #to plot histogram of continuous variables
+plot_density(QWE_Excel_1_)    #to plot density plot of variable
+
+```
+
+
+
+```{r}
+plot(prop.table(table(QWE_Excel_1_$`Churn (1 = Yes, 0 = No)`)))
+colnames(qwe)[which(names(qwe) == "CHI Score 0-1")] <- "CHI_score"
+colnames(qwe)[which(names(qwe) == "Customer Age (in months)")] <- "customer_age"
+colnames(qwe)[which(names(qwe) == "Churn (1 = Yes, 0 = No)")] <- "Churn"
+colnames(qwe)[which(names(qwe) == "CHI Score Month 0")] <- "churn_score_0"
+colnames(qwe)[which(names(qwe) == "Support Cases Month 0")] <- "Support_Cases_0"
+colnames(qwe)[which(names(qwe) == "CHI Score 0-1")] <- "CHI_0_1"
+colnames(qwe)[which(names(qwe) == "Support Cases 0-1")] <- "Support_Cases_0_1"
+colnames(qwe)[which(names(qwe) == "SP Month 0")] <- "sp_mon_0"
+colnames(qwe)[which(names(qwe) == "Views 0-1")] <- "views_0_1"
+colnames(qwe)[which(names(qwe) == "SP 0-1")] <- "SP_0_1"
+colnames(qwe)[which(names(qwe) == "Logins 0-1")] <- "logins_0_1"
+colnames(qwe)[which(names(qwe) == "Blog Articles 0-1")] <- "blog_articles_0_1"
+colnames(qwe)[which(names(qwe) == "Views 0-1")] <- "views_0_1"
+colnames(qwe)[which(names(qwe) == "Days Since Last Login 0-1")] <- "DaysSinceLast_Login_0_1"
+
+
+```
+
+
+```{r}
+
+df <- qwe[,c(2,3,4,5,6,7,8,9,10,11,12,13)]
+
+head(df)
+df <- as.data.frame(df)
+
+cor(df, method = c("pearson", "kendall", "spearman"))
+
+#install.packages('PerformanceAnalytics')
+library("PerformanceAnalytics")
+
+  
+qwe$ID -> id_qwe
+df$ID <- id_qwe
+
+```
+
+
+```{r}
+df$customer_age -> age
+age <- ifelse((age>=0) & (age<=6),"lessthan6",
+               ifelse((age>6) & (age<=14),"6_14",
+                      ifelse((age>14),"morethan14","NA")))
+
+plot(prop.table(table(age)))
+
+df$age_level <- age
+str(df)
+
+df$age_level <- as.factor(df$age_level)
+
+
+ggplot(aes(y = df$customer_age, x = churn, fill = age_level), data = df) + geom_boxplot()
+###no dependence on age 
+
+
+```
+
+
+```{r}
+# Create Training Data
+
+i_o <- df[which(df$Churn == 1), ]  # all 1's
+i_z <- df[which(df$Churn == 0), ]  # all 0's
+set.seed(140)  # for repeatability of samples
+
+i_o_t_r <- sample(1:nrow(i_o), 0.75*nrow(i_o))  # 1's for training
+i_z_t_r <- sample(1:nrow(i_z), 0.75*nrow(i_o))  # 0's for training. Pick as many 0's as 1's
+t_o <- i_o[i_o_t_r, ]  
+t_z <- i_z[i_z_t_r, ]
+trainingData <- rbind(t_o, t_z)  # row bind the 1's and 0's 
+
+
+```
+
+
+```{r}
+# Create Test Data
+test_ones <- i_o[-i_o_t_r, ]
+test_zeros <- i_z[-i_z_t_r, ]
+testData <- rbind(test_ones, test_zeros)  # row bind the 1's and 0's 
+
+dim(testData)
+dim(trainingData)
+table(trainingData$Churn)
+table(testData$Churn)
+
+```
+
+
+```{r}
+
+logitMod <- glm(Churn ~ customer_age + churn_score_0 + CHI_score + SP_0_1 + sp_mon_0+Support_Cases_0_1+Support_Cases_0+SP_0_1+DaysSinceLast_Login_0_1+views_0_1+blog_articles_0_1+logins_0_1+age_level, data=trainingData, family=binomial(link="logit"))
+summary(logitMod)
+anova(logitMod)
+
+```
+
+
+```{r}
+predicted <- plogis(predict(logitMod, testData))  # predicted scores
+
+```
+
+
+```{r}
+df[c(354,672,5203),]
+class(predicted)
+predicted <- as.data.frame(predicted)
+colnames(predicted)
+trainingData$ID -> id_train
+testData$ID -> id_test
+predicted$id <-  id_test
+
+View(predicted)
+```
+#customer 354 - 0.4809895
+#customer 672 - 0.46486432
+#customer 5203 - 0.32574207
+
+```{r}
+library(InformationValue)
+optCutOff <- 0.75
+```
+
+
+```{r}
+
+require(MASS)
+require(car)
+vif(logitMod)
+
+##devtools::install_github("InformationValue")
+
+
+misClassError(testData$Churn, predicted, threshold = optCutOff)
+
+plotROC(testData$Churn,predicted)
+
+Concordance(testData$Churn, predicted)
+
+sensitivity(testData$Churn, predicted, threshold = optCutOff)
+#> 0.3089
+specificity(testData$Churn, predicted, threshold = optCutOff)
+
+confusionMatrix(testData$Churn, predicted, threshold = optCutOff)
+
+
+```
+
+
+```{r}
+#####
+library(e1071)
+require(class)
+
+# Normalize the dataset between values 0 and 1
+normalize <- function(x){
+  return ((x-min(x))/(max(x)-min(x)))
+}
+```
+
+
+
+
+
+```{r}
+
+trainingData$ID -> id_train
+testData$ID -> id_test
+
+trainingdata.new<- as.data.frame(lapply(trainingData[,c(1,3,4,5,6,7,8,9,10,11,12)],normalize))
+head(trainingdata.new)
+```
+
+
+```{r}
+testdata.new<- as.data.frame(lapply(testData[,c(1,3,4,5,6,7,8,9,10,11,12)],normalize))
+head(testdata.new)
+
+```
+
+
+```{r}
+df.train.target<- trainingData[,2]
+df.test.target<- testData[,2]
+```
+
+
+```{r}
+
+##factors responsible for customers leaving out
+library(magrittr)
+QWE_Excel_1_$`Churn (1 = Yes, 0 = No)` <- as.factor(QWE_Excel_1_$`Churn (1 = Yes, 0 = No)`)
+QWE_Excel_1_ %>% ggplot(aes(x = QWE_Excel_1_$`Churn (1 = Yes, 0 = No)`, y = QWE_Excel_1_$`Customer Age (in months)`, fill = QWE_Excel_1_$`Churn (1 = Yes, 0 = No)`)) +geom_boxplot()  
+QWE_Excel_1_ %>% ggplot(aes(x = QWE_Excel_1_$`Churn (1 = Yes, 0 = No)`, y = QWE_Excel_1_$`CHI Score Month 0`, fill = QWE_Excel_1_$`Churn (1 = Yes, 0 = No)`)) +geom_boxplot()  
+QWE_Excel_1_ %>% ggplot(aes(x = QWE_Excel_1_$`Churn (1 = Yes, 0 = No)`, y = QWE_Excel_1_$`CHI Score 0-1`, fill = QWE_Excel_1_$`Churn (1 = Yes, 0 = No)`)) +geom_boxplot()  
+QWE_Excel_1_ %>% ggplot(aes(x = QWE_Excel_1_$`Churn (1 = Yes, 0 = No)`, y = QWE_Excel_1_$`Support Cases 0-1`, fill = QWE_Excel_1_$`Churn (1 = Yes, 0 = No)`)) +geom_boxplot()  
+QWE_Excel_1_ %>% ggplot(aes(x = QWE_Excel_1_$`Churn (1 = Yes, 0 = No)`, y = QWE_Excel_1_$`SP Month 0`, fill = QWE_Excel_1_$`Churn (1 = Yes, 0 = No)`)) +geom_boxplot()  
+QWE_Excel_1_ %>% ggplot(aes(x = QWE_Excel_1_$`Churn (1 = Yes, 0 = No)`, y = QWE_Excel_1_$`Logins 0-1`, fill = QWE_Excel_1_$`Churn (1 = Yes, 0 = No)`)) +geom_boxplot()  
+QWE_Excel_1_ %>% ggplot(aes(x = QWE_Excel_1_$`Churn (1 = Yes, 0 = No)`, y = QWE_Excel_1_$`Blog Articles 0-1`, fill = QWE_Excel_1_$`Churn (1 = Yes, 0 = No)`)) +geom_boxplot()  
+QWE_Excel_1_ %>% ggplot(aes(x = QWE_Excel_1_$`Churn (1 = Yes, 0 = No)`, y = QWE_Excel_1_$`Days Since Last Login 0-1`, fill = QWE_Excel_1_$`Churn (1 = Yes, 0 = No)`)) +geom_boxplot()  
+
+```
+
+
+```{r}
+###SVM model###
+library("e1071")
+colnames(testData)
+svm_model <- svm(Churn ~ ., data=trainingData)
+summary(svm_model)
+```
+
+
+```{r}
+pred <- predict(svm_model,testData)
+round(pred,0) -> pred_svm
+
+```
+
+
+```{r}
+
+trainingData$ID -> id_train
+testData$ID -> id_test
+table(pred_svm,testData$Churn)
+pred <- as.data.frame(pred)
+pred$id <- id_test
+head(pred)
+```
+
+
+```{r}
+View(pred)
+#354 - 0.744231670
+#672 - 0.622208856
+#5203 - 0.18854133
+optCutOff <- .75
+
+
+
+misClassError(testData$Churn, pred, threshold = optCutOff)
+
+plotROC(testData$Churn,pred)
+
+Concordance(testData$Churn, pred)
+
+sensitivity(testData$Churn, pred, threshold = optCutOff)
+# 0.50
+specificity(testData$Churn, pred, threshold = optCutOff)
+#0.822
+confusionMatrix(testData$Churn, pred, threshold = optCutOff)
+
+
+
+```
+
+
+```{r}
+
+
+```
+
+
+```{r}
+
+
+```
+
+
+```{r}
+
+
+```
+
+
+```{r}
+
+
+```
+
+
+```{r}
+
+
+```
+
+
+```{r}
+
+
+```
+
+
+```{r}
+
+
+```
+
+
+```{r}
+
+
+```
+
+
