@@ -1,7 +1,7 @@
 ---
 title: "QWE"
 output: html_document
-Author : 
+
 ---
 
 ```{r setup, include=FALSE}
@@ -104,9 +104,10 @@ df$age_level <- age
 str(df)
 
 df$age_level <- as.factor(df$age_level)
-
-
-ggplot(aes(y = df$customer_age, x = churn, fill = age_level), data = df) + geom_boxplot()
+colnames(df)
+str(df)
+df$Churn <- as.factor(df$Churn)
+ggplot(aes(y = df$customer_age, x = Churn, fill = age_level), data = df) + geom_boxplot()
 ###no dependence on age 
 
 
@@ -145,31 +146,20 @@ table(testData$Churn)
 
 
 ```{r}
-
-logitMod <- glm(Churn ~ customer_age + churn_score_0 + CHI_score + SP_0_1 + sp_mon_0+Support_Cases_0_1+Support_Cases_0+SP_0_1+DaysSinceLast_Login_0_1+views_0_1+blog_articles_0_1+logins_0_1+age_level, data=trainingData, family=binomial(link="logit"))
+set.seed(111)
+logitMod <- glm(Churn ~ churn_score_0 + CHI_score + sp_mon_0+ +Support_Cases_0_1+DaysSinceLast_Login_0_1+views_0_1+logins_0_1+age_level+blog_articles_0_1, data=trainingData, family=binomial(link="logit"))
 summary(logitMod)
 anova(logitMod)
-
+colnames(trainingData)
+colnames(qwe)
 ```
 
 
 ```{r}
 predicted <- plogis(predict(logitMod, testData))  # predicted scores
-
 ```
 
 
-```{r}
-df[c(354,672,5203),]
-class(predicted)
-predicted <- as.data.frame(predicted)
-colnames(predicted)
-trainingData$ID -> id_train
-testData$ID -> id_test
-predicted$id <-  id_test
-
-View(predicted)
-```
 #customer 354 - 0.4809895
 #customer 672 - 0.46486432
 #customer 5203 - 0.32574207
@@ -187,12 +177,16 @@ require(car)
 vif(logitMod)
 
 ##devtools::install_github("InformationValue")
-
-
 misClassError(testData$Churn, predicted, threshold = optCutOff)
 
-plotROC(testData$Churn,predicted)
+```
 
+```{r}
+plotROC(testData$Churn,predicted)
+table(testData$Churn)
+```
+
+```{r}
 Concordance(testData$Churn, predicted)
 
 sensitivity(testData$Churn, predicted, threshold = optCutOff)
@@ -204,44 +198,17 @@ confusionMatrix(testData$Churn, predicted, threshold = optCutOff)
 
 ```
 
-
 ```{r}
-#####
-library(e1071)
-require(class)
-
-# Normalize the dataset between values 0 and 1
-normalize <- function(x){
-  return ((x-min(x))/(max(x)-min(x)))
-}
-```
-
-
-
-
-
-```{r}
-
+df[c(354,672,5203),]
+class(predicted)
+predicted <- as.data.frame(predicted)
+colnames(predicted)
 trainingData$ID -> id_train
 testData$ID -> id_test
-
-trainingdata.new<- as.data.frame(lapply(trainingData[,c(1,3,4,5,6,7,8,9,10,11,12)],normalize))
-head(trainingdata.new)
-```
-
-
-```{r}
-testdata.new<- as.data.frame(lapply(testData[,c(1,3,4,5,6,7,8,9,10,11,12)],normalize))
-head(testdata.new)
+predicted$id <-  id_test
+View(predicted)
 
 ```
-
-
-```{r}
-df.train.target<- trainingData[,2]
-df.test.target<- testData[,2]
-```
-
 
 ```{r}
 
@@ -264,14 +231,45 @@ QWE_Excel_1_ %>% ggplot(aes(x = QWE_Excel_1_$`Churn (1 = Yes, 0 = No)`, y = QWE_
 ###SVM model###
 library("e1071")
 colnames(testData)
-svm_model <- svm(Churn ~ ., data=trainingData)
+colnames(trainingData)
 summary(svm_model)
+trainingData$ID -> id_train
+testData$ID -> id_test
+trainingData <- trainingData[,c(1,2,3,4,5,6,7,8,9,10,11,12)]
+testData <- testData[,c(1,2,3,4,5,6,7,8,9,10,11,12)]
+svm_model <- svm(as.numeric(as.character(Churn)) ~ ., data=trainingData)
+
+class(logitMod)
+class(svm_model)
 ```
 
 
 ```{r}
-pred <- predict(svm_model,testData)
-round(pred,0) -> pred_svm
+
+pred <- plogis(predict(svm_model,testData))
+
+```
+
+
+```{r}
+
+#354 - 0.744231670
+#672 - 0.622208856
+#5203 - 0.18854133
+optCutOff <- .75
+
+misClassError(testData$Churn, pred, threshold = optCutOff)
+
+str(pred)
+plotROC(as.numeric(as.character(testData$Churn)),as.numeric(pred))
+
+Concordance(testData$Churn, pred)
+sensitivity(testData$Churn, pred, threshold = optCutOff)
+# 0.50
+specificity(testData$Churn, pred, threshold = optCutOff)
+#0.822
+confusionMatrix(testData$Churn, pred, threshold = optCutOff)
+View(pred)
 
 ```
 
@@ -280,73 +278,14 @@ round(pred,0) -> pred_svm
 
 trainingData$ID -> id_train
 testData$ID -> id_test
-table(pred_svm,testData$Churn)
+table(pred,testData$Churn)
 pred <- as.data.frame(pred)
 pred$id <- id_test
 head(pred)
 ```
-
-
-```{r}
-View(pred)
-#354 - 0.744231670
-#672 - 0.622208856
-#5203 - 0.18854133
-optCutOff <- .75
-
-
-
-misClassError(testData$Churn, pred, threshold = optCutOff)
-
-plotROC(testData$Churn,pred)
-
-Concordance(testData$Churn, pred)
-
-sensitivity(testData$Churn, pred, threshold = optCutOff)
-# 0.50
-specificity(testData$Churn, pred, threshold = optCutOff)
-#0.822
-confusionMatrix(testData$Churn, pred, threshold = optCutOff)
-
-
-
-```
-
-
-```{r}
-
-
-```
-
-
-```{r}
-
-
-```
-
-
-```{r}
-
-
-```
-
-
-```{r}
-
-
-```
-
-
-```{r}
-
-
-```
-
-
-```{r}
-
-
-```
+#354 - 0.6098852
+#672 - 0.5867321
+#5203 - 0.5405019
 
 
 ```{r}
