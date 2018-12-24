@@ -1,7 +1,9 @@
 ---
 title: "QWE"
-output: html_document
-
+output:
+  word_document: default
+  pdf_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -92,6 +94,16 @@ df$ID <- id_qwe
 ```
 
 
+To test that Age is a factor related to Churn rate. We have created 3 levels of age. 
+1.	Less than 6 months old -  32.31%
+2.	Between 6 and 14 months - 29.96% 
+3.	More than 14 months - 37.71%
+
+
+Number of customers of age more than 14 months churn more. 
+It shows that there is no dependency on customer age as claimed by Wall's belief
+
+
 ```{r}
 df$customer_age -> age
 age <- ifelse((age>=0) & (age<=6),"lessthan6",
@@ -113,7 +125,7 @@ ggplot(aes(y = df$customer_age, x = Churn, fill = age_level), data = df) + geom_
 
 ```
 
-
+2. Run a single regression model that best predicts the probability that a customer leaves. What is the predicted probability that customer 672 will leave between December 2011 and February 2012? Is that high or low? Did that customer actually leave? What about customers 354 and 5203?
 ```{r}
 # Create Training Data
 
@@ -147,22 +159,23 @@ table(testData$Churn)
 
 ```{r}
 set.seed(111)
-logitMod <- glm(Churn ~ churn_score_0 + CHI_score + sp_mon_0+ +Support_Cases_0_1+DaysSinceLast_Login_0_1+views_0_1+logins_0_1+age_level+blog_articles_0_1, data=trainingData, family=binomial(link="logit"))
-summary(logitMod)
-anova(logitMod)
+Logistic_regression_model <- glm(Churn ~ churn_score_0 + CHI_score + sp_mon_0+ +Support_Cases_0_1+DaysSinceLast_Login_0_1+views_0_1+logins_0_1+age_level+blog_articles_0_1, data=trainingData, family=binomial(link="logit"))
+summary(Logistic_regression_model)
+anova(Logistic_regression_model)
 colnames(trainingData)
 colnames(qwe)
 ```
 
 
 ```{r}
-predicted <- plogis(predict(logitMod, testData))  # predicted scores
+predicted <- plogis(predict(Logistic_regression_model, testData))  # predicted scores
+
 ```
 
-
-#customer 354 - 0.4809895
-#customer 672 - 0.46486432
-#customer 5203 - 0.32574207
+The Actual probabilities of the required  customers are given below. It is low and less than 0.5. No, these customers did not left actually.
+customer 354 - 0.4809895
+customer 672 - 0.46486432
+customer 5203 - 0.32574207
 
 ```{r}
 library(InformationValue)
@@ -174,7 +187,7 @@ optCutOff <- 0.75
 
 require(MASS)
 require(car)
-vif(logitMod)
+vif(Logistic_regression_model)
 
 ##devtools::install_github("InformationValue")
 misClassError(testData$Churn, predicted, threshold = optCutOff)
@@ -225,22 +238,35 @@ QWE_Excel_1_ %>% ggplot(aes(x = QWE_Excel_1_$`Churn (1 = Yes, 0 = No)`, y = QWE_
 QWE_Excel_1_ %>% ggplot(aes(x = QWE_Excel_1_$`Churn (1 = Yes, 0 = No)`, y = QWE_Excel_1_$`Days Since Last Login 0-1`, fill = QWE_Excel_1_$`Churn (1 = Yes, 0 = No)`)) +geom_boxplot()  
 
 ```
+Plot 1 - Longevity in months has very less impact on the churn rate of customers.
+Plot 2 - CHI score for month 0 shows that customer who have churned have lower CHI score relative to other customers.
+Plot 3 - CHI score for month 0-1 shows that customer who have churned have lower CHI score relative to other customers.
+Plot 4 - 
+Plot 5 - Those customers who have high average Support Priority. will not churn more frequently.
+Plot 6 - Those customers who have churned have lesser number of logins as compared to other customers.
+Plot 7 - 
+Plot 8 - Days since last login is also a factor responsible for Churn rate of customers. From Boxplot , we can see that the customers who have churned have more days since last login.
 
 
+
+
+3. How sensible is the approach with a single model? Can you suggest a better approach? Provide updated estimates of probabilities that customers 672, 354 and 5,203 will leave.
+
+Lets try out with SVM model
 ```{r}
 ###SVM model###
 library("e1071")
 colnames(testData)
 colnames(trainingData)
-summary(svm_model)
+
 trainingData$ID -> id_train
 testData$ID -> id_test
 trainingData <- trainingData[,c(1,2,3,4,5,6,7,8,9,10,11,12)]
 testData <- testData[,c(1,2,3,4,5,6,7,8,9,10,11,12)]
 svm_model <- svm(as.numeric(as.character(Churn)) ~ ., data=trainingData)
 
-class(logitMod)
 class(svm_model)
+
 ```
 
 
@@ -274,24 +300,235 @@ View(pred)
 ```
 
 
-```{r}
 
-trainingData$ID -> id_train
-testData$ID -> id_test
-table(pred,testData$Churn)
-pred <- as.data.frame(pred)
-pred$id <- id_test
-head(pred)
-```
-#354 - 0.6098852
-#672 - 0.5867321
-#5203 - 0.5405019
+Below are the given probabilities for the customers. 
+customer 354 - 0.6098852
+customer 672 - 0.5867321
+customer 5203 - 0.5405019
 
+This time, we have implemented SVM model which means that a kernel trick is used to transformation and then based on these transformations, it finds an optimal boundary between the possible outputs. 
+This technique is used for the customers to find an optimal hyperplane to classify the churned customers and non- churn customers. 
+
+These customers have higher probability to churn using SVM model  but as per the cutoff , it is still lesser than 0.75
 
 ```{r}
+#install.packages('xgboost')
+#install.packages('tidyverse')
+
+library(xgboost) # for xgboost
+library(tidyverse) # general utility functions
+# put our testing & training data into two seperates Dmatrixs objects
+train_data <- as.matrix(trainingData)
+str(train_data)
+colnames(trainingData)
+
+t_d_removed <- trainingData %>%
+    select(-starts_with("Churn"))
+
+
+test_d_removed <- testData %>%
+    select(-starts_with("Churn"))
+
+
+# select just the numeric columns
+df_num <- df_removed %>%
+    select(-ID) %>% # the case id shouldn't contain useful information
+    select_if(is.numeric)
+
+
+t_d_matrix <- data.matrix(t_d_removed)
+test_d_matrix <- data.matrix(test_d_removed)
+trainingData$Churn-> labels_churn
+test_labels <- testData$Churn
+train_labels <- labels_churn
+class(train_labels)
+class(test_labels)
+test_labels <- as.numeric(as.character(test_labels))
+train_labels <- as.numeric(as.character(train_labels))
+
+length(labels_churn)
+# get the numb 70/30 training test split
+numberOfTrainingSamples <- round(length(labels_churn) * .7)
+
+# training data
+train_data <- df_matrix[1:numberOfTrainingSamples,]
+train_labels <- labels_churn[1:numberOfTrainingSamples]
+
+# testing data
+test_data <- df_matrix[-(1:numberOfTrainingSamples),]
+test_labels <- labels_churn[-(1:numberOfTrainingSamples)]
+prop.table(table(test_labels))
+prop.table(table(train_labels))
+# put our testing & training data into two seperates Dmatrixs objects
+dtrain <- xgb.DMatrix(data = t_d_matrix, label= train_labels)
+dtest <- xgb.DMatrix(data = test_d_matrix, label= test_labels)
+```
+
+
+```{r}
+
+
+# train a model using our training data
+model_xg <- xgboost(data = dtrain, # the data   
+                 nround = 4, # max number of boosting iterations
+                 objective = "binary:logistic")  # the objective function
+```
+
+```{r}
+
+# generate predictions for our held-out testing data
+pred_xg <- predict(model_xg, dtest)
+View(pred_xg)
+# get & print the classification error
+err <- mean(as.numeric(pred_xg > 0.7) != test_labels)
+print(paste("test-error=", err))
+View(testData$Churn)
+
+
+##devtools::install_github("InformationValue")
+library(InformationValue)
+misClassError(testData$Churn, pred_xg, threshold = 0.75)
+plotROC(as.numeric(as.character(testData$Churn)),as.numeric(pred_xg))
+
+sensitivity(testData$Churn, pred_xg, threshold = 0.75)
+# 0.222
+specificity(testData$Churn, pred_xg, threshold = 0.75)
+#0.959
+confusionMatrix(testData$Churn, pred_xg , threshold = 0.75)
+pred_xg <- as.data.frame(pred_xg)
+pred_xg$id <- id_test
+View(pred_xg)
+```
+
+
+Below are the given probabilities for the customers. They are lower than cutoffs
+customer 354 - 0.6192521
+customer 672 - 0.6297252
+customer 5203 - 0.4294627
+
+```{r}
+# train an xgboost model
+model_tuned <- xgboost(data = dtrain, # the data           
+                 max.depth = 3, # the maximum depth of each decision tree
+                 nround = 2, # max number of boosting iterations
+                 objective = "binary:logistic") # the objective function 
+
+# generate predictions for our held-out testing data
+pred <- predict(model_tuned, dtest)
+
+# get & print the classification error
+err <- mean(as.numeric(pred > 0.7) != test_labels)
+print(paste("test-error=", err))
+
+# plot them features! what's contributing most to our model?
+install.packages('DiagrammeR')
+require(DiagrammeR)
+xgb.plot.multi.trees(feature_names = names(t_d_matrix), 
+                     model = model_xg)
+```
+```{r}
+# convert log odds to probability
+odds_to_probs <- function(odds){
+    return(exp(odds)/ (1 + exp(odds)))
+}
+
+
+# probability of leaf above countryPortugul
+odds_to_probs(-0.599)
+
+# get information on how important each feature is
+importance_matrix <- xgb.importance(names(t_d_matrix), model = model_xg)
+
+# and plot it!
+xgb.plot.importance(importance_matrix)
 
 
 ```
+
+
+#install.packages('DMwR')
+library(DMwR)
+trainingData$Churn <- as.factor(trainingData$Churn)
+trainSplit <- SMOTE(Churn ~ ., trainingData, perc.over = 100, perc.under=200)
+trainSplit$Churn<- as.numeric(trainSplit$Churn)
+str(trainSplit)
+dim(trainSplit)
+table(trainSplit$Churn)
+
+table(trainingData$Churn)
+
+```
+
+
+
+```{r}
+
+
+```
+
+
+
+```{r}
+
+
+```
+
+
+
+```{r}
+
+
+```
+
+
+
+```{r}
+
+
+```
+
+
+
+```{r}
+
+
+```
+
+
+
+```{r}
+
+
+```
+
+
+
+```{r}
+
+
+```
+
+
+
+```{r}
+
+
+```
+
+
+
+```{r}
+
+
+```
+
+
+
+```{r}
+
+
+```
+
 
 
 ```{r}
