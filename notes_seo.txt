@@ -1,0 +1,100 @@
+Good SE - higher CTR
+ROPO - RESEARCH online purchase online - in spain
+qualified traffic - recieve traffic that convert into sales -will interact with us in the way we want....
+
+SE interpret what user wants
+
+success --- 
+how quickly SE displays results and how those results are to the users's query....
+
+more than 200 vars in algo for search results- evaluating the ranking...
+
+
+what they do:::
+
+searching and crawling ---
+1. use spiders, web crawlers to dentify files stored on web servers...
+
+2.  spiders move from one site to other through links they find on web pages. - links are imp in finding page rank...
+
+3.  we must make it easy for spiders to crawl to our site..
+
+Indexing ----
+
+1. SE has crawled our site,,,  it stores the site's pages.. and contents on its own servers...
+2.  Assigns them a unique identifier,,,
+
+
+Ranking & displaying results -----
+
+SE must rank all files and prepare lists based on our  search terms, ranking is done on the basis of algo
+
+Algo process::
+
+1. it defines how well each page and its content fits original query...
+
+2. it gives each page a relative value --- called importance...
+
+
+
+insite - SEO
+
+1. help SE to crawl effectively- provide sitemap 
+2. putting page specific keywords in title, within HTML code...using right keyword density on each page 
+
+
+offsite - SEO
+
+action taken outside the website to generate links to the site...
+1. by generating relevant content
+2. pre-defined link building strategy..
+3. this will include getting the site registered in web directories.
+leaving comments in blogs , with links to our website, 
+
+
+SEO -- ??
+
+these are techniques aimed at improving website position on SE result pages, to improve more traffic -  in response to a given query by a user...
+
+we need to think about customers first.. then SEO
+
+How is SEO carried out???
+
+How are keywords identified,,waht are basic SEO techniques,,best way to measure results to optmize the strategy???
+
+1. main goals - audience - action - pages to be visited.
+
+*****************************************************
+BAsic SEO techniques
+
+****CONTENT -> KEYWORD RESEARCH  -> LINK BUIDING -> SOCIAL.........
+
+FIRST -  IS TO INCLUDE KEYWORDS in title, description...
+
+second -  is to generate links from other websites..
+create relevant content in blogs  - - - 
+
+
+
+What is the best way to measure the results - to optimize SEO
+1. measure the position before and after the SEO strategy.....
+2. ranking of website in SE.... for chosen keywords....
+3. qualty of incoming traffic from each of the chosen keywords...
+4. no of inbound links to website...
+5. no of pages of our website indexed by each search engine...
+
+
+
+SEO is done by ??????
+SEO manager do the following::
+
+1. communication
+2. Sales
+3. Marketing
+4. Systems
+
+goal -  to attract qualified traffic to our website..
+
+
+ 
+
