@@ -45,6 +45,8 @@ https://codereview.stackexchange.com/questions/147625/decision-tree-node-split-b
 https://github.com/oliviaguest/gini
 https://www.geeksforgeeks.org/decision-tree-implementation-python/
 https://medium.com/@rakendd/decision-tree-from-scratch-9e23bcfb4928
+
+
 https://medium.com/@rakendd/decision-tree-from-scratch-9e23bcfb4928
 
 https://www.oreilly.com/ideas/building-deep-learning-neural-networks-using-tensorflow-layers
@@ -105,10 +107,15 @@ https://towardsdatascience.com/let-us-understand-the-correlation-matrix-and-cova
 
 http://www.inf.ed.ac.uk/teaching/courses/inf2b/learnSlides/inf2b12-learnlec09.pdf
 
-https://medium.com/@gp_pulipaka/applying-gaussian-naïve-bayes-classifier-in-python-part-one-9f82aa8d9ec4
+https://medium.com/@gp_pulipaka/applying-gaussian-naÃ¯ve-bayes-classifier-in-python-part-one-9f82aa8d9ec4
 
 https://www.kaggle.com/mjbahmani/20-ml-algorithms-15-plot-for-beginners
 
 https://www.kaggle.com/asparago/3-basic-classifiers-and-features-correlation
+
+https://towardsdatascience.com/handwriting-recognition-using-tensorflow-and-keras-819b36148fe5
+http://www.fki.inf.unibe.ch/databases/iam-handwriting-database/iam-handwriting-database#icdar02
+https://www.kaggle.com/tejasreddy/iam-handwriting-top50/kernels
+https://github.com/rohun-tripathi/Handwriting_recognition
 
 GBHBL00450530000044321
